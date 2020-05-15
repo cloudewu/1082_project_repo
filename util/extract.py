@@ -30,7 +30,7 @@ if __name__ == '__main__':
         
     with open(fout, 'w+', encoding='utf-8') as f:
         for news in data:
-            if args.pure:
+            if args.preprocess:
                 f.write('{}\n'.format(news['title']))
                 f.write('{}\n\n'.format(preprocess(news['content'])))
             else:
