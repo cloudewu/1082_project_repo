@@ -3,7 +3,7 @@
 Bert處理流程
 =============
 1. 下載pretrain檔
-2. 將data進行前處理（參照[util/extract.py](extractpy)）
+2. 將data進行前處理（參照[util/extract.py](#extractpy)）
 3. 製作input data，ref: [Bert/create_pretraining_data.py](https://github.com/google-research/bert#pre-training-with-bert)  
 max_seq_length跟batch_size視自己machine的能力進行調整
 ```
@@ -49,8 +49,7 @@ optional arguments:
 workspace.ipynb
 -------------
 工作檔，內有brute-force/ckiptagger完整處理流程與中間檔的展示  
-
-**Notes: **  
+**Notes**  
 要跑brute-force的話不需dependency，  
 但要跑後半段ckiptagger的code需先install [ckiptagger](https://github.com/ckiplab/ckiptagger) package,   
 並且根據repo內的readme下載WS需要的model後才能run起來 
