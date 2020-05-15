@@ -1,3 +1,24 @@
+**All bert training code is from [Google Research Github](https://github.com/google-research/bert)! Thanks google. :)**
+
+Bert處理流程
+=============
+1. 下載pretrain檔
+2. 將data進行前處理（參照[util/extract.py](extractpy)）
+3. 製作input data，ref: [Bert/create_pretraining_data.py](https://github.com/google-research/bert#pre-training-with-bert)  
+max_seq_length跟batch_size視自己machine的能力進行調整
+```
+python create_pretraining_data.py --input_file=<input> --output_file=<out>.tfrecord --vocab_file=<bert_model>\vocab.txt --do_lower_case=False --max_seq_length=<int>
+```
+4. 丟進Bert進行pretrain，ref同上  
+max_seq_length跟batch_size一樣視自己machine的能力進行調整  
+建議Step先調小進行debug再正式開train
+```
+python run_pretraining.py --input_file=data\<input>.tfrecord --output_dir=<out> --do_train=True --do_eval=True --bert_config_file=<model>\bert_config.json --init_checkpoint=<model>\bert_model.ckpt --train_batch_size=<int> --max_seq_length=<int> --num_train_steps=<int> --num_warmup_steps=<int>
+```
+
+`data/` and `util/`
+=============
+
 Data
 -------------
 檔案儲存區
@@ -13,8 +34,6 @@ extract.py
  * 移除原始顯示用換行，並利用\[：；。？！\.\]符號重新進行有意義斷行
  * 刪減多餘空白
 也可自行到`preprocess()`中定義前處理流程  
-
-**Usage**:  
 ```
 usage: extract.py [-h] [-p] input [output]
 
@@ -39,7 +58,6 @@ workspace.ipynb
 process.py
 -------------
 workspace的打包檔，input直接丟進去可以一次性分析json並輸出ngram count  
-**Usage:**  
 ```
 usage: process.py [-h] input [output]
 
@@ -54,7 +72,6 @@ optional arguments:
 convert.py
 -------------
 將force-ASCII的json檔案轉換為UTF-8顯示json檔  
-**Usage:**  
 ```
 usage: convert.py [-h] input [output]
 
