@@ -1,7 +1,14 @@
 **All bert training code is from [Google Research Github](https://github.com/google-research/bert)! Thanks google. :)**
  * [Model files](https://drive.google.com/open?id=1-5iqhd5JUcMoZ5cDcYRtCXJHvJKPuJHM)
 
-Bert處理流程
+Cluster處理流程
+=============
+1. 下載[Model files](https://drive.google.com/open?id=1-5iqhd5JUcMoZ5cDcYRtCXJHvJKPuJHM)（5/15-16 fine-tune檔案）
+2. 利用`python util/extract.py --oneline`製作input.txt
+3. 把input檔餵進`extract_features.py`取得embedding.jsonl (max_seq可進行調整，為了把content吃進去我都下128)
+4. `python cluster.py input.txt embedding.jsonl output.json --alg=<kmean|ap>`取得分群資料
+
+Bert pretrain流程
 =============
 1. 下載pretrain檔
 2. 將data進行前處理（參照[util/extract.py](#extractpy)）
