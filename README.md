@@ -1,4 +1,5 @@
 **All bert training code is from [Google Research Github](https://github.com/google-research/bert)! Thanks google. :)**
+ * [Model files](https://drive.google.com/open?id=1-5iqhd5JUcMoZ5cDcYRtCXJHvJKPuJHM)
 
 Bert處理流程
 =============
