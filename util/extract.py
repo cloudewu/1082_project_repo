@@ -7,7 +7,9 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('input_file', nargs=1, type=str, metavar='input', help='json file contain news titles and contents')
     parser.add_argument('output_file', nargs='?', default='result.txt', type=str, metavar='output' ,help='output path to write counting result')
-    parser.add_argument('-p', '--preprocess', action='store_true', help='Preprocess data into BERT-frendly format')
+    parser.add_argument('-to', '--titleonly', action='store_true', help='Ouput news title only')
+    parser.add_argument('-o', '--oneline', action='store_true', help='Ouput one result in one line, seperate title and content with tab')
+    parser.add_argument('-p', '--preprocess', action='store_true', help='Preprocess data into BERT-frendly pretrained format')
 
     return parser.parse_args()
 
@@ -30,7 +32,12 @@ if __name__ == '__main__':
         
     with open(fout, 'w+', encoding='utf-8') as f:
         for news in data:
-            if args.preprocess:
+            if args.titleonly:
+                f.write('{}\n'.format(news['title']))
+            elif args.oneline:
+                content = preprocess(news['content']).replace('\n', '').replace('\t', ' ')
+                f.write('{}\t{}\n'.format(news['title'], content))
+            elif args.preprocess:
                 f.write('{}\n'.format(news['title']))
                 f.write('{}\n\n'.format(preprocess(news['content'])))
             else:

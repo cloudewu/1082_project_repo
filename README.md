@@ -36,7 +36,7 @@ extract.py
  * 刪減多餘空白
 也可自行到`preprocess()`中定義前處理流程  
 ```
-usage: extract.py [-h] [-p] input [output]
+usage: extract.py [-h] [-to] [-o] [-p] input [output]
 
 positional arguments:
   input             json file contain news titles and contents
@@ -44,7 +44,10 @@ positional arguments:
 
 optional arguments:
   -h, --help        show this help message and exit
-  -p, --preprocess  Preprocess data into BERT-frendly format
+  -to, --titleonly  Ouput news title only
+  -o, --oneline     Ouput one result in one line, seperate title and content
+                    with tab
+  -p, --preprocess  Preprocess data into BERT-frendly pretrained format
 ```
 
 workspace.ipynb
