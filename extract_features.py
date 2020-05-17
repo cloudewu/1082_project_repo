@@ -407,7 +407,7 @@ def main(_):
         features["layers"] = all_layers
         all_features.append(features)
       output_json["features"] = all_features
-      writer.write(json.dumps(output_json) + "\n")
+      writer.write(json.dumps(output_json, ensure_ascii=False) + "\n")
 
 
 if __name__ == "__main__":
