@@ -30,7 +30,7 @@ def get_input_files(files, work_dir, skip=False, log_folder='log'):
 
 
 # command: `python extract_features.py --input_file=INPUT --output_file=OUTPUT --vocab_file=VOCFILE --bert_config_file=CONFIG --init_checkpoint=CHECKPOINT --layers=-1 --max_seq_length=INT --batch_size=INT`
-def get_embeddings(input_path, work_dir, voc_path='model/vocab.txt', config_path='model/bert_config.json', checkpoint='model/model.ckpt-0', layers=[-1, -2, -3, -4], max_seq_length=128, batch_size=8, skip=False, log_folder='log'):
+def get_embeddings(input_path, work_dir, voc_path='model/vocab.txt', config_path='model/bert_config.json', ckpt='model/model.ckpt-0', layers=[-1, -2, -3, -4], max_seq_length=128, batch_size=8, skip=False, log_folder='log'):
     print('Getting embeddings...')
 
     if not os.path.isdir(log_folder):
@@ -40,7 +40,7 @@ def get_embeddings(input_path, work_dir, voc_path='model/vocab.txt', config_path
     arguments = []
     arguments.append('--vocab_file=' + voc_path)
     arguments.append('--bert_config_file=' + config_path)
-    arguments.append('--init_checkpoint=' + checkpoint)
+    arguments.append('--init_checkpoint=' + ckpt)
     layers_str = ','.join([str(i) for i in layers])
     arguments.append('--layers=' + layers_str)
     arguments.append('--max_seq_length=' + str(max_seq_length))
@@ -63,6 +63,11 @@ def get_embeddings(input_path, work_dir, voc_path='model/vocab.txt', config_path
         output_path[query] = output_file
     log.close()
     return output_path
+
+def get_all_embeddings(input_path, work_dir, model_list, model_dir='model', config_path='bert_config.json', ckpt_prefix='model.ckpt-', layers=[-1, -2, -3, -4], max_seq_length=128, batch_size=8, skip=False, log_folder='log'):
+    for model in model_list:
+        ckpt = os.
+
 
 def get_clusters(input_path, embed_path, work_dir, model, algorithm, n=None, skip=False, log_folder='log'):
     if not os.path.isdir(log_folder):
