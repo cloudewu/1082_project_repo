@@ -6,9 +6,6 @@ import argparse
 def get_input_files(files, work_dir, skip=False, log_folder='log'):
     print('Preprocessing news files...')
 
-    output_dir = os.path.join(work_dir, 'inputs')
-    if not os.path.isdir(output_dir):
-        os.mkdir(output_dir)
     if not os.path.isdir(log_folder):
         os.mkdir(log_folder)
     log_file = os.path.join(log_folder, 'preprocess.log')
@@ -16,14 +13,18 @@ def get_input_files(files, work_dir, skip=False, log_folder='log'):
     
     files_path = {}
     for filename in files:
-        basename = os.path.basename(filename).split('.')[0]
-        output_file = os.path.join(output_dir, basename+'.txt')
+        query = os.path.basename(filename).split('.')[0]
+        output_dir = os.path.join(work_dir, query)
+        if not os.path.isdir(output_dir):
+            os.mkdir(output_dir)
+        
+        output_file = os.path.join(output_dir, 'input.txt')
         print('  {}  -->  {}'.format(filename, output_file))
         log.write('{}  -->  {}\n'.format(filename, output_file))
 
         if not skip:
             call(['python', 'util/extract.py', '-o', filename, output_file])
-        files_path[basename] = output_file
+        files_path[query] = output_file
     log.close
     return files_path
 
@@ -32,9 +33,6 @@ def get_input_files(files, work_dir, skip=False, log_folder='log'):
 def get_embeddings(input_path, work_dir, voc_path='model/vocab.txt', config_path='model/bert_config.json', checkpoint='model/model.ckpt-0', layers=[-1, -2, -3, -4], max_seq_length=128, batch_size=8, skip=False, log_folder='log'):
     print('Getting embeddings...')
 
-    output_dir = os.path.join(work_dir, 'embeddings')
-    if not os.path.isdir(output_dir):
-        os.mkdir(output_dir)
     if not os.path.isdir(log_folder):
         os.mkdir(log_folder)
     log_file = os.path.join(log_folder, 'embedding.log')
@@ -50,31 +48,36 @@ def get_embeddings(input_path, work_dir, voc_path='model/vocab.txt', config_path
 
     output_path = {}
     log = open(log_file, 'w+', encoding='utf-8')
-    for filename, filepath in input_path.items():
-        output_file = os.path.join(output_dir, filename+'.jsonl')
+    for query, filepath in input_path.items():
+        output_dir = os.path.join(work_dir, query)
+        if not os.path.isdir(output_dir):
+            os.mkdir(output_dir)
+        output_file = os.path.join(output_dir, 'embedding.jsonl')
+
         print('  {}  -->  {}'.format(filepath, output_file))
         log.write('  {}  -->  {}\n'.format(filepath, output_file))
         log.write('python extract_features.py --input_file='+filepath+'--output_file='+output_file+' '.join(arguments)+'\n')
         
         if not skip:
             call(['python', 'extract_features.py', '--input_file=' + filepath, '--output_file=' + output_file] + arguments)
-        output_path[filename] = output_file
+        output_path[query] = output_file
     log.close()
     return output_path
 
 
 def get_clusters(input_path, embed_path, work_dir, algorithm, skip=False, log_folder='log'):
-    output_dir = os.path.join(work_dir, 'cluster')
-    if not os.path.isdir(output_dir):
-        os.mkdir(output_dir)
     if not os.path.isdir(log_folder):
         os.mkdir(log_folder)
     log_file = os.path.join(log_folder, 'cluster.log')
 
     log = open(log_file, 'w+', encoding='utf-8')
-    for filename, input_file in input_path.items():
-        embed_file = embed_path[filename]
-        output_file = os.path.join(output_dir, filename+'.json')
+    for query, input_file in input_path.items():
+        embed_file = embed_path[query]
+        output_dir = os.path.join(work_dir, query)
+        if not os.path.isdir(output_dir):
+            os.mkdir(output_dir)
+        output_file = os.path.join(output_dir, 'cluster.json')
+
         print('  {}, {}  -->  {}'.format(input_file, embed_file, output_file))
         log.write('{}, {}  -->  {}\n'.format(input_file, embed_file, output_file))
         if not skip:
