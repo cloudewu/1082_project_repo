@@ -53,7 +53,7 @@ def get_embeddings(input_path, work_dir, voc_path='model/vocab.txt', config_path
     for filename, filepath in input_path.items():
         output_file = os.path.join(output_dir, filename+'.jsonl')
         print('  {}  -->  {}'.format(filepath, output_file))
-        log.write('{}  -->  {}\n'.format(filename, output_file))
+        log.write('  {}  -->  {}\n'.format(filepath, output_file))
         log.write('python extract_features.py --input_file='+filepath+'--output_file='+output_file+' '.join(arguments)+'\n')
         
         if not skip:
@@ -89,6 +89,7 @@ def main():
     parser.add_argument('-l', '--log_folder', nargs='?', default='log', type=str, help="log folder")
     parser.add_argument('-sp', '--skip_preprocess', action='store_true', help="skip data preprocessing (will cause error if files not exist)")
     parser.add_argument('-se', '--skip_embedding', action='store_true', help="skip data embedding (will cause error if files not exist)")
+    parser.add_argument('-sc', '--skip_clustering', action='store_true', help="skip data clustering (will cause error if files not exist)")
     parser.add_argument('-d', '--debug', action='store_true', help="debug mode")
     args = parser.parse_args()
 
@@ -98,9 +99,9 @@ def main():
         os.mkdir(args.log_folder)
     
     files = glob(os.path.join(args.input_dir, '*.json'))
-    input_path = get_input_files(files, args.work_dir, skip=args.skip_preprocess, log_folder='work\log')
-    embed_path = get_embeddings(input_path, args.work_dir, layers=[-1], skip=args.skip_embedding, log_folder='work\log')
-    get_clusters(input_path, embed_path, args.work_dir, 'ap')
+    input_path = get_input_files(files, args.work_dir, skip=args.skip_preprocess, log_folder=args.log_folder)
+    embed_path = get_embeddings(input_path, args.work_dir, layers=[-1], skip=args.skip_embedding, log_folder=args.log_folder)
+    get_clusters(input_path, embed_path, args.work_dir, 'ap', skip=args.skip_clustering, log_folder=args.log_folder)
 
 if __name__=='__main__':
     main()
