@@ -89,4 +89,4 @@ if __name__=='__main__':
 
     news, features = get_input(args.news, args.embedding, debugging=args.debug)
     clusters = cluster_news(news, features, args.algorithm, n=args.n)
-    dump_json = dump_json(clusters, args.output)
+    dump_json(clusters, args.output)
