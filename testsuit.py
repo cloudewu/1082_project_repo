@@ -56,33 +56,55 @@ def get_embeddings(input_path, work_dir, voc_path='model/vocab.txt', config_path
 
         print('  {}  -->  {}'.format(filepath, output_file))
         log.write('  {}  -->  {}\n'.format(filepath, output_file))
-        log.write('python extract_features.py --input_file='+filepath+'--output_file='+output_file+' '.join(arguments)+'\n')
         
         if not skip:
-            call(['python', 'extract_features.py', '--input_file=' + filepath, '--output_file=' + output_file] + arguments)
+            log.write(' '.join(['python', '-W ignore', 'extract_features.py', '--input_file=' + filepath, '--output_file=' + output_file] + arguments)+'\n')
+            call(['python', '-W ignore', 'extract_features.py', '--input_file=' + filepath, '--output_file=' + output_file] + arguments)
         output_path[query] = output_file
     log.close()
     return output_path
 
-
-def get_clusters(input_path, embed_path, work_dir, algorithm, skip=False, log_folder='log'):
+def get_clusters(input_path, embed_path, work_dir, model, algorithm, n=None, skip=False, log_folder='log'):
     if not os.path.isdir(log_folder):
         os.mkdir(log_folder)
     log_file = os.path.join(log_folder, 'cluster.log')
-
     log = open(log_file, 'w+', encoding='utf-8')
+
+    arguments = []
+    filename = model
+    if algorithm.lower() == 'kmean':
+        if n is None:
+            print('[ WARN ] Use kmean but n is not specified. Use n=10 as default.')
+            log.write('[ WARN ] Use kmean but n is not specified. Use n=10 as default.\n')
+            n = 5
+        arguments.append('--algorithm=kmean')
+        arguments.append('-n='+str(n))
+        filename += '_kmean_n' + str(n)
+    elif algorithm.lower() in ['ap', 'affinitypropagation']:
+        arguments.append('--algorithm=ap')
+        filename += '_ap'
+    filename += '.json'
+        
     for query, input_file in input_path.items():
         embed_file = embed_path[query]
         output_dir = os.path.join(work_dir, query)
         if not os.path.isdir(output_dir):
             os.mkdir(output_dir)
-        output_file = os.path.join(output_dir, 'cluster.json')
+        output_file = os.path.join(output_dir, filename)
 
         print('  {}, {}  -->  {}'.format(input_file, embed_file, output_file))
         log.write('{}, {}  -->  {}\n'.format(input_file, embed_file, output_file))
         if not skip:
-            call(['python', '-W ignore', 'cluster.py', input_file, embed_file, output_file, '--algorithm='+algorithm])
+            log.write(' '.join(['python', 'cluster.py', input_file, embed_file, output_file] + arguments)+'\n')
+            call(['python', 'cluster.py', input_file, embed_file, output_file] + arguments)
     log.close()
+    return
+
+def get_all_clusters(input_path, embed_path, work_dir, model, skip=False, log_folder='log'):
+    print('Clustering...')
+    for n in range(5, 20+1, 5):
+        get_clusters(input_path, embed_path, work_dir, model, algorithm='kmean', n=n, skip=skip, log_folder=log_folder)
+    get_clusters(input_path, embed_path, work_dir, model, algorithm='ap', skip=skip, log_folder=log_folder)
     return
 
 def main():
@@ -104,7 +126,8 @@ def main():
     files = glob(os.path.join(args.input_dir, '*.json'))
     input_path = get_input_files(files, args.work_dir, skip=args.skip_preprocess, log_folder=args.log_folder)
     embed_path = get_embeddings(input_path, args.work_dir, layers=[-1], skip=args.skip_embedding, log_folder=args.log_folder)
-    get_clusters(input_path, embed_path, args.work_dir, 'ap', skip=args.skip_clustering, log_folder=args.log_folder)
+    # get_clusters(input_path, embed_path, args.work_dir, 'ap', skip=args.skip_clustering, log_folder=args.log_folder)
+    get_all_clusters(input_path, embed_path, args.work_dir, 'base', skip=args.skip_clustering, log_folder=args.log_folder)
 
 if __name__=='__main__':
     main()
