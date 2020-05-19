@@ -28,7 +28,7 @@ def get_input_files(files, work_dir, skip=False, log_folder='log'):
         elif not os.path.isfile(output_file):
             open(output_file, 'w+').close()   # creat empty file to prevent error
         files_path[query] = output_file
-    log.close
+    log.close()
     return files_path
 
 

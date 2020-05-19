@@ -10,6 +10,7 @@ def get_input(news_path, embed_path, debugging=False):
     for idx, line in enumerate(lines):
         title, content = line.split('\t')
         news_dict[idx] = {}
+        news_dict[idx]['index'] = idx
         news_dict[idx]['title'] = title
         news_dict[idx]['content'] = content
     

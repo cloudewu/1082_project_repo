@@ -8,6 +8,7 @@ def parse_args():
     parser.add_argument('input_file', nargs=1, type=str, metavar='input', help='json file contain news titles and contents')
     parser.add_argument('output_file', nargs='?', default='result.txt', type=str, metavar='output' ,help='output path to write counting result')
     parser.add_argument('-to', '--titleonly', action='store_true', help='Ouput news title only')
+    parser.add_argument('-i', '--index', action='store_true', help='Add news unique index number')
     parser.add_argument('-o', '--oneline', action='store_true', help='Ouput one result in one line, seperate title and content with tab')
     parser.add_argument('-p', '--preprocess', action='store_true', help='Preprocess data into BERT-frendly pretrained format')
 
@@ -31,7 +32,10 @@ if __name__ == '__main__':
         data = json.load(f)['result']
         
     with open(fout, 'w+', encoding='utf-8') as f:
-        for news in data:
+        for idx, news in enumerate(data):
+            if args.index:
+                f.write('{}\t'.format(idx))
+            
             if args.titleonly:
                 f.write('{}\n'.format(news['title']))
             elif args.oneline:
