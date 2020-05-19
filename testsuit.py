@@ -147,6 +147,23 @@ def get_all_clusters(input_path, embed_path, work_dir, skip=False, log_folder='l
         get_clusters(input_path, embedding, work_dir, model, algorithm='ap', skip=skip, logger=log, log_folder=None)
     return
 
+def get_groundtruth(embed_path, skip=False, logger=None, log_folder='log'):
+    print('Extracting groundtruth...')
+    if logger is None:
+        if not os.path.isdir(log_folder):
+            os.mkdir(log_folder)
+        log_file = os.path.join(log_folder, 'getlabel.log')
+        log = open(log_file, 'w+', encoding='utf-8')
+    else:
+        log = logger
+    
+    for query, embed_file in embed_path.items():
+        if '_' in query and not skip:
+            log.write(' '.join(['python', 'util/get_groundtruth.py', query, embed_file]) + '\n')
+            call(['python', 'util/get_groundtruth.py', query, embed_file])
+    log.close()
+    return
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('input_dir', help="Where to find all files")
@@ -163,6 +180,7 @@ def parse_args():
     flags = parser.add_argument_group('optional flags')
     flags.add_argument('-sp', '--skip_preprocess', action='store_true', help="skip data preprocessing (will cause error if files not exist)")
     flags.add_argument('-se', '--skip_embedding', action='store_true', help="skip data embedding (will cause error if files not exist)")
+    flags.add_argument('-sg', '--skip_groundtruth', action='store_true', help="skip getting groundtruth")
     flags.add_argument('-sc', '--skip_clustering', action='store_true', help="skip data clustering (will cause error if files not exist)")
     flags.add_argument('-d', '--debug', action='store_true', help="debug mode")
 
@@ -183,6 +201,8 @@ def main():
                                     model_dir=args.model_dir, voc_path=args.voc_file, config_path=args.config_file, ckpt_prefix='model.ckpt-', 
                                     model_list=args.model_list, layers=args.layers, max_seq_length=args.max_seq_length, batch_size=args.batch_size, 
                                     skip=args.skip_embedding)
+
+    get_groundtruth(next(iter(embed_path.values())), args.skip_groundtruth, logger=None, log_folder=args.log_dir)
     
     get_all_clusters(input_path, embed_path, args.work_dir, skip=args.skip_clustering, log_folder=args.log_dir)
 

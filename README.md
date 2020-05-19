@@ -5,10 +5,10 @@ Testsuit用法
 =============
 用以直接讀取資料夾input，並產生每個query的embedding與cluster結果  
 ```
-usage: testsuit.py [-h] [-voc VOC_FILE] [-cf CONFIG_FILE]
-                   [-m {0,3000,7000} [{0,3000,7000} ...]]
+usage: testsuit.py [-h] [-voc VOC_FILE] [-cf CONFIG_FILE]        
+                   [-m {0,3000,7000} [{0,3000,7000} ...]]        
                    [-l LAYERS [LAYERS ...]] [-seq MAX_SEQ_LENGTH]
-                   [-b BATCH_SIZE] [-sp] [-se] [-sc] [-d]
+                   [-b BATCH_SIZE] [-sp] [-se] [-sg] [-sc] [-d]  
                    input_dir model_dir [work_dir] [log_dir]
 
 positional arguments:
@@ -22,8 +22,8 @@ positional arguments:
     `python testsuit.py data/0519 model/`
 2. 指定output與log位置到work/和work/log:
     `python testsuit.py data/0519 model/ work work/log`
-3. 利用-sp, -se, -sc可跳過資料preprocessing、embedding或cluster動作，可用來重跑特定步驟
-4. 可利用`python testsuit.py data/0519 model/ work -sp -se -sc`快速檢視output資料夾結構
+3. 利用-sp, -se, -sg, -sc可跳過資料preprocessing、embedding、抓groundtruth或cluster動作，可用來重跑特定步驟
+4. 可利用`python testsuit.py data/0519 model/ work -sp -se -sg -sc`快速檢視output資料夾結構
 5. 更多參數相關說明請參考`python testsuit.py -h`
 
 
@@ -60,7 +60,7 @@ Data
  * `.json`: colab載下來的原始檔
  * `.txt`: 用extract.py處理過的純文字檔
 
-extract.py
+util/extract.py
 -------------
 讀取從COLAB下直接載下來的.json檔，並抓取出乾淨的news content。  
 不下-p則會取得原始新聞內容（稍微加了分行增進易讀性）  
@@ -84,7 +84,25 @@ optional arguments:
   -p, --preprocess  Preprocess data into BERT-frendly pretrained format
 ```
 
-workspace.ipynb
+util\get_groundtruth.py
+-------------
+讀取複數關鍵字的embedding，並自動分析Ground該news的群組。  
+用法： `python get_groundtruth.py 川普_林志玲 embedding.jsonl`  
+```
+usage: get_groundtruth.py [-h] [-d] query input_file [output_file]
+
+positional arguments:
+  query        Search engine input
+  input_file   news embedding file
+  output_file  output location
+
+optional arguments:
+  -h, --help   show this help message and exit
+  -d, --debug  debug mode
+```
+
+
+util/workspace.ipynb
 -------------
 工作檔，內有brute-force/ckiptagger完整處理流程與中間檔的展示  
 **Notes**  
@@ -92,7 +110,7 @@ workspace.ipynb
 但要跑後半段ckiptagger的code需先install [ckiptagger](https://github.com/ckiplab/ckiptagger) package,   
 並且根據repo內的readme下載WS需要的model後才能run起來 
 
-process.py
+util/process.py
 -------------
 workspace的打包檔，input直接丟進去可以一次性分析json並輸出ngram count  
 ```
@@ -106,7 +124,7 @@ optional arguments:
   -h, --help  show this help message and exit
 ```
 
-convert.py
+util/convert.py
 -------------
 將force-ASCII的json檔案轉換為UTF-8顯示json檔  
 ```
