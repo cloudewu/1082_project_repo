@@ -1,12 +1,39 @@
 **All bert training code is from [Google Research Github](https://github.com/google-research/bert)! Thanks google. :)**
  * [Model files](https://drive.google.com/open?id=1-5iqhd5JUcMoZ5cDcYRtCXJHvJKPuJHM)
 
+Testsuit用法
+=============
+用以直接讀取資料夾input，並產生每個query的embedding與cluster結果  
+```
+usage: testsuit.py [-h] [-voc VOC_FILE] [-cf CONFIG_FILE]
+                   [-m {0,3000,7000} [{0,3000,7000} ...]]
+                   [-l LAYERS [LAYERS ...]] [-seq MAX_SEQ_LENGTH]
+                   [-b BATCH_SIZE] [-sp] [-se] [-sc] [-d]
+                   input_dir model_dir [work_dir] [log_dir]
+
+positional arguments:
+  input_dir             Where to find all files
+  model_dir             Where to find model configs
+  work_dir              Where to place output and temp files
+  log_dir               Where to store logs
+```
+範例：  
+1. 使用model/下的設定處理data/0519內的json資料:
+    `python testsuit.py data/0519 model/`
+2. 指定output與log位置到work/和work/log:
+    `python testsuit.py data/0519 model/ work work/log`
+3. 利用-sp, -se, -sc可跳過資料preprocessing、embedding或cluster動作，可用來重跑特定步驟
+4. 可利用`python testsuit.py data/0519 model/ work -sp -se -sc`快速檢視output資料夾結構
+5. 更多參數相關說明請參考`python testsuit.py -h`
+
+
 Cluster處理流程
 =============
 1. 下載[Model files](https://drive.google.com/open?id=1-5iqhd5JUcMoZ5cDcYRtCXJHvJKPuJHM)（5/15-16 fine-tune檔案）
 2. 利用`python util/extract.py --oneline`製作input.txt
 3. 把input檔餵進`extract_features.py`取得embedding.jsonl (max_seq可進行調整，為了把content吃進去我都下128)
 4. `python cluster.py input.txt embedding.jsonl output.json --alg=<kmean|ap>`取得分群資料
+
 
 Bert pretrain流程
 =============
