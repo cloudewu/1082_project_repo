@@ -164,6 +164,11 @@ def get_groundtruth(embed_path, skip=False, logger=None, log_folder='log'):
     log.close()
     return
 
+def collect_json(work_dir, log_dir):
+    from util.collect_files import copy_tree
+    collect_folder = os.path.join(work_dir, '0_collect')
+    call(['python', 'util/collect_files.py', '*.json', work_dir, collect_folder, '-s', '-l', os.path.join(log_dir,'collect.log')])
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('input_dir', help="Where to find all files")
@@ -178,6 +183,7 @@ def parse_args():
     bert_args.add_argument('-seq', '--max_seq_length', default=128, type=int, help='sequence length')
     bert_args.add_argument('-b', '--batch_size', default=16, type=int, help='inference batch size')
     flags = parser.add_argument_group('optional flags')
+    flags.add_argument('-c', '--collect_json', action='store_true', help="collect output cluster files to another folder")
     flags.add_argument('-sp', '--skip_preprocess', action='store_true', help="skip data preprocessing (will cause error if files not exist)")
     flags.add_argument('-se', '--skip_embedding', action='store_true', help="skip data embedding (will cause error if files not exist)")
     flags.add_argument('-sg', '--skip_groundtruth', action='store_true', help="skip getting groundtruth")
@@ -205,6 +211,9 @@ def main():
     get_groundtruth(next(iter(embed_path.values())), args.skip_groundtruth, logger=None, log_folder=args.log_dir)
     
     get_all_clusters(input_path, embed_path, args.work_dir, skip=args.skip_clustering, log_folder=args.log_dir)
+
+    if args.collect_json:
+        collect_json(args.work_dir, args.log_dir)
 
 if __name__=='__main__':
     main()
