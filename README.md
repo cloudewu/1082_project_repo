@@ -1,14 +1,15 @@
 **All bert training code is from [Google Research Github](https://github.com/google-research/bert)! Thanks google. :)**
- * [Model files](https://drive.google.com/open?id=1-5iqhd5JUcMoZ5cDcYRtCXJHvJKPuJHM)
+ * [Model files](https://drive.google.com/open?id=17WsB5oQcwmiwWA4909Yh9RKpJnUUkEtN)
+ * [All training checkpoint](https://drive.google.com/open?id=1-5iqhd5JUcMoZ5cDcYRtCXJHvJKPuJHM)
 
 Testsuit用法
 =============
 用以直接讀取資料夾input，並產生每個query的embedding與cluster結果  
 ```
-usage: testsuit.py [-h] [-voc VOC_FILE] [-cf CONFIG_FILE]        
-                   [-m {0,3000,7000} [{0,3000,7000} ...]]        
+usage: testsuit.py [-h] [-voc VOC_FILE] [-cf CONFIG_FILE]
+                   [-m {0,3000,7000} [{0,3000,7000} ...]]
                    [-l LAYERS [LAYERS ...]] [-seq MAX_SEQ_LENGTH]
-                   [-b BATCH_SIZE] [-sp] [-se] [-sg] [-sc] [-d]  
+                   [-b BATCH_SIZE] [-c] [-sp] [-se] [-sg] [-sc] [-d]
                    input_dir model_dir [work_dir] [log_dir]
 
 positional arguments:
@@ -22,9 +23,10 @@ positional arguments:
     `python testsuit.py data/0519 model/`
 2. 指定output與log位置到work/和work/log:
     `python testsuit.py data/0519 model/ work work/log`
-3. 利用-sp, -se, -sg, -sc可跳過資料preprocessing、embedding、抓groundtruth或cluster動作，可用來重跑特定步驟
-4. 可利用`python testsuit.py data/0519 model/ work -sp -se -sg -sc`快速檢視output資料夾結構
-5. 更多參數相關說明請參考`python testsuit.py -h`
+3. 利用-c可在cluster結束後自動將所有cluster result複製到collect/下
+4. 利用-sp, -se, -sg, -sc可跳過資料preprocessing、embedding、抓groundtruth或cluster動作，可用來重跑特定步驟
+5. 可利用`python testsuit.py data/0519 model/ work -sp -se -sg -sc`快速檢視output資料夾結構
+6. 更多參數相關說明請參考`python testsuit.py -h`
 
 
 Cluster處理流程
@@ -101,6 +103,26 @@ optional arguments:
   -d, --debug  debug mode
 ```
 
+util/collect_files.py
+-------------
+可將一個資料夾下符合某個pattern的資料全部複製到另一個資料夾下。  
+* 範例：  
+  `python util/collect_files.py *.json work collect`：將work/下所有json檔複製至collect/下  
+* `-s`可用以維持原使資料夾的子資料夾結構，防止同檔名檔案互相覆蓋  
+```
+usage: collect_files.py [-h] [-l LOG] [-s] [-v] pattern source_dir dest_dir
+
+positional arguments:
+  pattern            file pattern
+  source_dir         search target folder
+  dest_dir           copy destination
+
+optional arguments:
+  -h, --help         show this help message and exit
+  -l LOG, --log LOG  write log info to file
+  -s, --structured   copy files with directory structure
+  -v, --verbose      print copy messages
+```
 
 util/workspace.ipynb
 -------------
