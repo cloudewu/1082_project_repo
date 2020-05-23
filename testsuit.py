@@ -178,7 +178,7 @@ def parse_args():
     bert_args = parser.add_argument_group('bert configuration', description='BERT configs. Model folder prefix is not needed.')
     bert_args.add_argument('-voc', '--voc_file', default='vocab.txt', help='tokenize vocabulary file')
     bert_args.add_argument('-cf', '--config_file', default='bert_config.json', help='model config file')
-    bert_args.add_argument('-m', '--model_list', nargs='+', default=[0, 3000, 7000], choices=[0, 3000, 7000], type=int, help='checkpoint of which model to use')
+    bert_args.add_argument('-m', '--model_list', nargs='+', default=[0, 3000, 7000, 49087], choices=[0, 3000, 7000, 49087], type=int, help='checkpoint of which model to use')
     bert_args.add_argument('-l', '--layers', nargs='+', default=[-1], type=int, help='feature layer to use')
     bert_args.add_argument('-seq', '--max_seq_length', default=128, type=int, help='sequence length')
     bert_args.add_argument('-b', '--batch_size', default=16, type=int, help='inference batch size')
